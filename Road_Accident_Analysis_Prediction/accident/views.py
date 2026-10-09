@@ -6,10 +6,18 @@ import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 import plotly.figure_factory as ff 
+import os
+
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+)
 # Create your views here.
 
 def analysis(request):
-    df= pd.read_csv(r"F:\Desktop\code\Road Accident Analysis And Prediction\clean_data.csv")
+    df= pd.read_csv(os.path.join(BASE_DIR, "clean_data.csv"))
    
 #year_rate
     year_rate = df["Year"].value_counts().sort_index()
@@ -157,9 +165,9 @@ def analysis(request):
     )
 
 
-importance = pd.read_csv(r"F:\Desktop\code\Road Accident Analysis And Prediction\models\feature_importance.csv")
-cm = joblib.load(r"F:\Desktop\code\Road Accident Analysis And Prediction\models\confusion_matrix.pkl")
-class_labels = joblib.load(r"F:\Desktop\code\Road Accident Analysis And Prediction\models\class_labels.pkl")
+importance = pd.read_csv(os.path.join(BASE_DIR, "models", "feature_importance.csv"))
+cm = joblib.load(os.path.join(BASE_DIR, "models", "confusion_matrix.pkl"))
+class_labels = joblib.load(os.path.join(BASE_DIR, "models", "class_labels.pkl"))
     
 def evaluation(request):
     importance_fig = px.bar(
@@ -193,8 +201,8 @@ def evaluation(request):
 
 
 
-model = joblib.load(r"F:\Desktop\code\Road Accident Analysis And Prediction\models\accident_severity_model.pkl")
-feature_names = joblib.load(r"F:\Desktop\code\Road Accident Analysis And Prediction\models\feature_names.pkl")
+model = joblib.load(os.path.join(BASE_DIR, "models", "accident_severity_model.pkl"))
+feature_names = joblib.load(os.path.join(BASE_DIR, "models", "feature_names.pkl"))
 
 def predict(request):
     prediction = None

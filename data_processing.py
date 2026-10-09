@@ -1,6 +1,8 @@
 import pandas as pd 
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-raw_data= pd.read_csv(r"F:\Desktop\code\Road Accident Analysis And Prediction\accident_prediction_india.csv")
+raw_data = pd.read_csv(os.path.join(BASE_DIR, "accident_prediction_india.csv"))
 df= raw_data.fillna("Not Available")
 df["Total Number of Casualties"]= df["Number of Casualties"]+df["Number of Fatalities"]
 df=df.drop("City Name",axis=1)

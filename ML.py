@@ -6,9 +6,12 @@ from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
 import joblib
+import os
 
 
-df= pd.read_csv(r"F:\Desktop\code\Road Accident Analysis And Prediction\data_ML.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+df = pd.read_csv(os.path.join(BASE_DIR, "data_ML.csv"))
 df = df.drop(columns=["Unnamed: 0"], errors="ignore")
 df = df.drop(columns=["Time of Day"], errors="ignore")
 
