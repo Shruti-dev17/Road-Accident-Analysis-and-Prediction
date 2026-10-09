@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Evaluation</title>
+    <style> 
+     body {
+        margin: 15;
+        padding: 20;
+        font-family: sans-serif;
+        background-color: #a18ef8;
+        color: #000000;
+      }
+      h1 {
+        text-align: center;
+        color: #000000;
+        text-decoration: underline;
+      }
+
+    .graphs-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+        border: 10px solid rgb(38, 1, 80);
+      }</style>
+</head>
+<body>
+          <h1>Machine Learning Model Evaluation</h1>
+         <h2>
+            <a style="color: rgb(38, 1, 80)" href="/" class="back">← Back to Analysis</a>
+           </h2>
+
+          <div class="graphs-container">
+            <div class="graph-card full-width">{{ importance_fig|safe }}</div>
+
+            <div class="graph-card full-width">{{ cm_fig|safe }}</div>
+          </div>
+        </div>
+</body>
+</html>

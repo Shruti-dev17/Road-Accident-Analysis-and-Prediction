@@ -1,0 +1,11 @@
+Feature,Importance
+Speed Limit (km/h),0.08517359170494357
+Hour,0.07224719018714446
+Total Number of Casualties,0.06466779467270307
+Year,0.0464585900170364
+Number of Vehicles Involved,0.04363665569174846
+Driver License Status_Valid,0.015681715934971134
+Driver License Status_Not Available,0.015497409095337283
+Accident Location Details_Straight Road,0.015189064856735292
+Accident Location Details_Bridge,0.015027631153935786
+Alcohol Involvement_Yes,0.01502665617063119
