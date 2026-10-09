@@ -149,20 +149,56 @@ def analysis(request):
    
  
     return render(
-        request,
-        "accident/analysis.html",
-        {
-            "year_fig": year_fig.to_html(full_html=False),
-            "month_fig": month_fig.to_html(full_html=False),
-            "time_fig":time_fig.to_html(full_html=False),
-            "alcohol_fig":alcohol_fig.to_html(full_html=False),
-            "fig_severity":fig_severity.to_html(full_html=False),
-            "casualties_fig":casualties_fig.to_html(full_html=False),
-            "road_fig":road_fig.to_html(full_html=False),
-            "state_fig":state_fig.to_html(full_html=False),
-            "fig_state":fig_state.to_html(full_html=False),
-        }
-    )
+    request,
+    "accident/analysis.html",
+    {
+        "year_fig": year_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "month_fig": month_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "time_fig": time_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "alcohol_fig": alcohol_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "fig_severity": fig_severity.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "casualties_fig": casualties_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "road_fig": road_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "state_fig": state_fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        ),
+        "fig_state": fig_state.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={"displayModeBar": False}
+        )
+    }
+)
 
 importance = pd.read_csv(os.path.join(BASE_DIR, "models", "feature_importance.csv"))
 cm = joblib.load(os.path.join(BASE_DIR, "models", "confusion_matrix.pkl"))
