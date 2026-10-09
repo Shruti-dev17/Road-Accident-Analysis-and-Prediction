@@ -115,18 +115,19 @@ def analysis(request):
         df["Road Condition"]
     )
 
-    road_fig = ff.create_annotated_heatmap(
-        z=severity_heatmap.values,
-        x=severity_heatmap.columns.tolist(),
-        y=severity_heatmap.index.tolist(),
-        annotation_text=severity_heatmap.values.astype(str),
-        colorscale="Viridis"
+    road_fig = px.imshow(
+    severity_heatmap,
+    text_auto=True,
+    aspect="auto",
+    color_continuous_scale="Viridis",
+    labels=dict(
+    x="Road Condition",
+    y="Accident Severity",
+    color="Number of Accidents"
+    ),
+    title="Accident Severity by Road Condition"
     )
 
-    road_fig.update_layout(
-        xaxis_title="Road Condition",
-        yaxis_title="Accident Severity"
-    )
     
 #by state / severity
 
