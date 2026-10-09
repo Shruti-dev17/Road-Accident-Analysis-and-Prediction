@@ -1,0 +1,7 @@
+Django
+gunicorn
+pandas
+plotly
+scikit-learn
+joblib
+numpy
