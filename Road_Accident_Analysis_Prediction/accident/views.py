@@ -4,6 +4,7 @@ from .form import PredictionForm
 import joblib
 import pandas as pd
 import plotly.express as px
+import plotly.figure_factory as ff 
 import os
 
 
@@ -14,99 +15,71 @@ BASE_DIR = os.path.dirname(
 )
 # Create your views here.
 
-
 def analysis(request):
-    df = pd.read_csv(os.path.join(BASE_DIR, "clean_data.csv"))
-
-    # by year
+    df= pd.read_csv(os.path.join(BASE_DIR, "clean_data.csv"))
+   
+#year_rate
     year_rate = df["Year"].value_counts().sort_index()
+    year_fig=px.line(x=year_rate.index,y=year_rate.values,labels={"x": "Year", "y": "Accidents"},title="Accidents rate by Year")
 
-    year_fig = px.line(
-        x=year_rate.index,
-        y=year_rate.values,
-        labels={"x": "Year", "y": "Accidents"},
-        title="Accidents by Year",
-        markers=True
+#month_rate
+    def no_acc_month():
+        jan_mar=0
+        apr_jun=0
+        jul_sep = 0
+        oct_dec=0
+
+        for i in df["Month"]:
+            if i in ["January", "February", "March"]:
+               jan_mar+=1
+            elif i in ["April", "May", "June"]:
+               apr_jun+=1
+            elif i in ["July", "August", "September"]:
+               jul_sep+=1
+            elif i in ["October", "November", "December"]:
+               oct_dec+=1 
+        return jan_mar, apr_jun, jul_sep, oct_dec
+
+    months=['Jan-Mar','Apr-Jun','Jul-Sep','Oct-Dec']
+    monthly_rate=list(no_acc_month())
+
+    month_fig = px.bar(x=months,y=monthly_rate,labels={"x": "Month", "y": "Accidents"},title="Montly accident rate")
+    month_fig.update_layout(
+        
     )
+#hour rate   
 
-    # by quarter
-    month_groups = {
-        "Jan-Mar": ["January", "February", "March"],
-        "Apr-Jun": ["April", "May", "June"],
-        "Jul-Sep": ["July", "August", "September"],
-        "Oct-Dec": ["October", "November", "December"],
-    }
-
-    monthly_rate = [
-        df["Month"].isin(months).sum()
-        for months in month_groups.values()
-    ]
-
-    month_fig = px.bar(
-        x=list(month_groups.keys()),
-        y=monthly_rate,
-        labels={"x": "Month", "y": "Accidents"},
-        title="Accidents by Quarter"
-    )
-
-    # by time of day
-    acc_time = pd.to_datetime(
-        df["Time of Day"], format="mixed"
-    ).dt.hour
-
+    acc_time=pd.to_datetime(df["Time of Day"], format="mixed").dt.hour
     time_rate = acc_time.value_counts().sort_index()
+    time_fig=px.line(x=time_rate.index,y=time_rate.values,labels={"x": "Hour", "y": "Accidents"},title="Accidents rate by Time of the day")
 
-    time_fig = px.line(
-        x=time_rate.index,
-        y=time_rate.values,
-        labels={"x": "Hour", "y": "Accidents"},
-        title="Accidents by Time of Day",
-        markers=True
-    )
-
-    # 4. Alcohol involvement
-    alcohol_data = (
-        df["Alcohol Involvement"]
-        .value_counts(dropna=False)
-        .reset_index()
-    )
-    alcohol_data.columns = ["Alcohol Involvement", "Count"]
-
+#alcohol pie
     alcohol_fig = px.pie(
-        alcohol_data,
+        df,
         names="Alcohol Involvement",
-        values="Count",
         title="Alcohol Involvement in Accidents"
     )
+   
 
-    # Vehicles involved by location and severity
-    severity_data = (
-        df.groupby(
-            ["Accident Location Details", "Accident Severity"],
-            as_index=False,
-            dropna=False
-        )["Number of Vehicles Involved"]
-        .sum()
-    )
-
+#vehical/severity
     fig_severity = px.bar(
-        severity_data,
-        x="Accident Location Details",
+        df,
         y="Number of Vehicles Involved",
+        x="Accident Location Details",
         color="Accident Severity",
-        title="Vehicles Involved by Location and Severity",
+        title="Number of Vehicles Involved by Accident Location",
         labels={
             "y": "Number of Vehicles Involved",
-            "x": "Accident Location",
-            "color": "Accident Severity",
+            "x": "Accident Location Details",
+            "color":"Accident Severity",
         }
     )
 
-    #Average casualties by vehicle type
-    casualties = (
-        df.groupby("Vehicle Type Involved")[
-            "Total Number of Casualties"
-        ]
+
+
+#casualties
+    casualties= (
+        df.groupby("Vehicle Type Involved")["Total Number of Casualties"]
         .mean()
         .reset_index()
     )
@@ -119,13 +92,10 @@ def analysis(request):
         markers=True
     )
 
-    #Accidents by state
-    state_accidents = (
-        df["State Name"]
-        .value_counts()
-        .rename_axis("State Name")
-        .reset_index(name="Number of Accidents")
-    )
+  # by state  
+    state_accidents = df["State Name"].value_counts().reset_index()
+
+    state_accidents.columns = ["State Name", "Number of Accidents"]
 
     state_fig = px.bar(
         state_accidents,
@@ -138,32 +108,34 @@ def analysis(request):
         }
     )
 
-    #Severity by road condition
+#severity heatmap
     severity_heatmap = pd.crosstab(
         df["Accident Severity"],
         df["Road Condition"]
     )
 
     road_fig = px.imshow(
-        severity_heatmap,
-        text_auto=True,
-        aspect="auto",
-        color_continuous_scale="Viridis",
-        labels={
-            "x": "Road Condition",
-            "y": "Accident Severity",
-            "color": "Number of Accidents"
-        },
-        title="Accident Severity by Road Condition"
+    severity_heatmap,
+    text_auto=True,
+    aspect="auto",
+    color_continuous_scale="Viridis",
+    labels=dict(
+    x="Road Condition",
+    y="Accident Severity",
+    color="Number of Accidents"
+    ),
+    title="Accident Severity by Road Condition"
     )
 
-    # State-wise accident severity
+    
+#by state / severity
+
     state_severity = pd.crosstab(
         df["State Name"],
         df["Accident Severity"]
     )
 
-    fig_state = px.bar(
+    fig_state= px.bar(
         state_severity,
         x=state_severity.index,
         y=state_severity.columns,
@@ -174,30 +146,23 @@ def analysis(request):
             "variable": "Accident Severity"
         }
     )
-
+   
  
-    charts = {
-        "year_fig": year_fig,
-        "month_fig": month_fig,
-        "time_fig": time_fig,
-        "alcohol_fig": alcohol_fig,
-        "fig_severity": fig_severity,
-        "casualties_fig": casualties_fig,
-        "road_fig": road_fig,
-        "state_fig": state_fig,
-        "fig_state": fig_state,
-    }
-
-    context = {
-        name: fig.to_html(
-            full_html=False,
-            include_plotlyjs=False,
-            config={"displayModeBar": False}
-        )
-        for name, fig in charts.items()
-    }
-
-    return render(request, "accident/analysis.html", context)
+    return render(
+        request,
+        "accident/analysis.html",
+        {
+            "year_fig": year_fig.to_html(full_html=False),
+            "month_fig": month_fig.to_html(full_html=False),
+            "time_fig":time_fig.to_html(full_html=False),
+            "alcohol_fig":alcohol_fig.to_html(full_html=False),
+            "fig_severity":fig_severity.to_html(full_html=False),
+            "casualties_fig":casualties_fig.to_html(full_html=False),
+            "road_fig":road_fig.to_html(full_html=False),
+            "state_fig":state_fig.to_html(full_html=False),
+            "fig_state":fig_state.to_html(full_html=False),
+        }
+    )
 
 importance = pd.read_csv(os.path.join(BASE_DIR, "models", "feature_importance.csv"))
 cm = joblib.load(os.path.join(BASE_DIR, "models", "confusion_matrix.pkl"))
